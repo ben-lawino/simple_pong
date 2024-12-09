@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_pong/components/ball.dart';
 import 'dart:math';
-
 import 'package:simple_pong/components/bat.dart';
 
 // Enum for ball direction
@@ -15,6 +14,9 @@ class Pong extends StatefulWidget {
 }
 
 class _PongState extends State<Pong> with SingleTickerProviderStateMixin {
+  //variable to contain the score
+  int score = 0;
+
   // Random multipliers to make ball movement unpredictable
   double randX = 1; // Horizontal random factor
   double randY = 1; // Vertical random factor
@@ -49,7 +51,8 @@ class _PongState extends State<Pong> with SingleTickerProviderStateMixin {
     posY = 0;
 
     // Create a long-running animation controller for smooth game updates
-    controller = AnimationController(duration: const Duration(minutes: 10000), vsync: this);
+    controller = AnimationController(
+        duration: const Duration(minutes: 10000), vsync: this);
 
     // Define an animation (not tied to actual values but used to trigger updates)
     animation = Tween<double>(begin: 0, end: 100).animate(controller);
@@ -58,16 +61,49 @@ class _PongState extends State<Pong> with SingleTickerProviderStateMixin {
     animation.addListener(() {
       safeSetState(() {
         // Update ball's X position based on its horizontal direction
-        posX += (hDir == Direction.right ? increment * randX : -increment * randX).round();
+        posX +=
+            (hDir == Direction.right ? increment * randX : -increment * randX)
+                .round();
 
         // Update ball's Y position based on its vertical direction
-        posY += (vDir == Direction.down ? increment * randY : -increment * randY).round();
+        posY +=
+            (vDir == Direction.down ? increment * randY : -increment * randY)
+                .round();
       });
       checkBorders(); // Check for collisions with screen borders or bat
     });
 
     controller.forward(); // Start the animation
   }
+
+  //dialog box
+  void showMessage(BuildContext context){
+    showDialog(context: context, builder: (BuildContext context){
+      return AlertDialog(
+        title: Text('Game Over'),
+        content: Text('Would you like to play again?'),
+        actions: [
+          TextButton(
+      child: Text('Yes'),
+            onPressed: (){
+            setState(() {
+              posX = 0;
+              posY = 0;
+              score = 0;
+            });
+            Navigator.of(context).pop();
+            controller.repeat();
+          },),
+          TextButton(onPressed: (){
+            Navigator.of(context).pop();
+            dispose();
+          }, child: Text('No'))
+        ],
+      );
+
+    });
+  }
+
 
   // Generate a random number between 0.5 and 1.5 to vary ball movement
   double randomNumber() {
@@ -92,12 +128,16 @@ class _PongState extends State<Pong> with SingleTickerProviderStateMixin {
     // Check if the ball hits the bottom of the screen
     if (posY >= height - diameter - batHeight && vDir == Direction.down) {
       // Ball hits the bat if within bat's horizontal range
-      if (posX >= (batPosition - diameter) && posX <= (batPosition + batWidth + diameter)) {
+      if (posX >= (batPosition - diameter) &&
+          posX <= (batPosition + batWidth + diameter)) {
         vDir = Direction.up; // Reverse vertical direction upwards
-        randY = randomNumber(); // Adjust random factor
+        randY = randomNumber();
+        safeSetState((){
+          score ++;
+        });
       } else {
         controller.stop(); // Stop the animation if ball misses the bat
-        dispose(); // Dispose resources
+        showMessage(context);
       }
     }
 
@@ -146,6 +186,9 @@ class _PongState extends State<Pong> with SingleTickerProviderStateMixin {
 
         return Stack(
           children: [
+            //Text with the  score
+            Positioned(
+                top: 0, right: 24, child: Text('Score :' + score.toString()),),
             // Ball widget positioned based on its current position
             Positioned(
               child: Ball(), // Ball component
