@@ -77,33 +77,47 @@ class _PongState extends State<Pong> with SingleTickerProviderStateMixin {
   }
 
   //dialog box
-  void showMessage(BuildContext context){
-    showDialog(context: context, builder: (BuildContext context){
-      return AlertDialog(
-        title: Text('Game Over'),
-        content: Text('Would you like to play again?'),
-        actions: [
-          TextButton(
-      child: Text('Yes'),
-            onPressed: (){
-            setState(() {
-              posX = 0;
-              posY = 0;
-              score = 0;
-            });
-            Navigator.of(context).pop();
-            controller.repeat();
-          },),
-          TextButton(onPressed: (){
-            Navigator.of(context).pop();
-            dispose();
-          }, child: Text('No'))
-        ],
-      );
-
-    });
+  void showMessage(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15), color: Colors.red),
+              child: Center(
+                  child: Text(
+                'Game Over',
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+              )),
+            ),
+            content: Text('Would you like to play again?',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+            actions: [
+              TextButton(
+                child: Text('Yes',style: TextStyle(color: Colors.green,fontWeight: FontWeight.w500)),
+                onPressed: () {
+                  setState(() {
+                    posX = 0;
+                    posY = 0;
+                    score = 0;
+                  });
+                  Navigator.of(context).pop();
+                  controller.repeat();
+                },
+              ),
+              TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    dispose();
+                  },
+                  child: Text('No',style: TextStyle(color: Colors.red,fontWeight:FontWeight.w500),))
+            ],
+          );
+        });
   }
-
 
   // Generate a random number between 0.5 and 1.5 to vary ball movement
   double randomNumber() {
@@ -132,8 +146,8 @@ class _PongState extends State<Pong> with SingleTickerProviderStateMixin {
           posX <= (batPosition + batWidth + diameter)) {
         vDir = Direction.up; // Reverse vertical direction upwards
         randY = randomNumber();
-        safeSetState((){
-          score ++;
+        safeSetState(() {
+          score++;
         });
       } else {
         controller.stop(); // Stop the animation if ball misses the bat
@@ -181,14 +195,19 @@ class _PongState extends State<Pong> with SingleTickerProviderStateMixin {
         width = constraints.maxWidth; // Screen width
 
         // Set bat dimensions as a fraction of screen size
-        batWidth = width / 5; // Bat width is 1/5 of screen width
-        batHeight = height / 20; // Bat height is 1/20 of screen height
+        batWidth = width / 4; // Bat width is 1/5 of screen width
+        batHeight = height / 25; // Bat height is 1/20 of screen height
 
         return Stack(
           children: [
             //Text with the  score
             Positioned(
-                top: 0, right: 24, child: Text('Score :' + score.toString()),),
+              top: 0,
+              right: 24,
+              child: Text(
+                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                  'Score : ' + score.toString()),
+            ),
             // Ball widget positioned based on its current position
             Positioned(
               child: Ball(), // Ball component
