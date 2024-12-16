@@ -85,7 +85,7 @@ class _PongState extends State<Pong> with SingleTickerProviderStateMixin {
             title: Container(
               width: double.infinity,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(15), color: Colors.red),
+                  borderRadius: BorderRadius.circular(15), color: Colors.blue),
               child: Center(
                   child: Text(
                 'Game Over',
@@ -188,44 +188,47 @@ class _PongState extends State<Pong> with SingleTickerProviderStateMixin {
   // Build the game UI
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (BuildContext context, BoxConstraints constraints) {
-        // Update screen dimensions based on layout constraints
-        height = constraints.maxHeight; // Screen height
-        width = constraints.maxWidth; // Screen width
+    return Container(
+      decoration: BoxDecoration(border: Border.all(color: Colors.lightBlueAccent,width: 6)),
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          // Update screen dimensions based on layout constraints
+          height = constraints.maxHeight; // Screen height
+          width = constraints.maxWidth; // Screen width
 
-        // Set bat dimensions as a fraction of screen size
-        batWidth = width / 4; // Bat width is 1/5 of screen width
-        batHeight = height / 25; // Bat height is 1/20 of screen height
+          // Set bat dimensions as a fraction of screen size
+          batWidth = width / 4; // Bat width is 1/5 of screen width
+          batHeight = height / 25; // Bat height is 1/20 of screen height
 
-        return Stack(
-          children: [
-            //Text with the  score
-            Positioned(
-              top: 0,
-              right: 24,
-              child: Text(
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                  'Score : ' + score.toString()),
-            ),
-            // Ball widget positioned based on its current position
-            Positioned(
-              child: Ball(), // Ball component
-              top: posY, // Ball's vertical position
-              left: posX, // Ball's horizontal position
-            ),
-            // Bat widget positioned at the bottom of the screen
-            Positioned(
-              bottom: 0, // Place bat at the bottom
-              left: batPosition, // Set bat's horizontal position
-              child: GestureDetector(
-                onHorizontalDragUpdate: moveBat, // Update bat position on drag
-                child: Bat(height: batHeight, width: batWidth), // Bat component
+          return Stack(
+            children: [
+              //Text with the  score
+              Positioned(
+                top: 0,
+                right: 24,
+                child: Text(
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                    'Score : ' + score.toString()),
               ),
-            ),
-          ],
-        );
-      },
+              // Ball widget positioned based on its current position
+              Positioned(
+                child: Ball(), // Ball component
+                top: posY, // Ball's vertical position
+                left: posX, // Ball's horizontal position
+              ),
+              // Bat widget positioned at the bottom of the screen
+              Positioned(
+                bottom: 0, // Place bat at the bottom
+                left: batPosition, // Set bat's horizontal position
+                child: GestureDetector(
+                  onHorizontalDragUpdate: moveBat, // Update bat position on drag
+                  child: Bat(height: batHeight, width: batWidth), // Bat component
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
